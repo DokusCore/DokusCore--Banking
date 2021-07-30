@@ -6,7 +6,7 @@
 
 ---
 # Dependencies
-This plugin is depending on the [DokusCore](https://github.com/dokucore) Framework!
+This plugin is depending on the [DokusCore](https://github.com/dokucore) Framework!<br>
 Make sure that DokusCore is started before this plugin!
 
 ---
@@ -17,7 +17,7 @@ and start it via `ensure DokusCore--Banking`.
 ---
 # Plugin Information
 This plugin gives your users the ability to store money in a bank account.<br>
-The money within the bank account is save and can not be lost. You can store
+The money within the bank account is save and can not be lost. You can store<br>
 money as well as gold into the bank.
 
 ---
