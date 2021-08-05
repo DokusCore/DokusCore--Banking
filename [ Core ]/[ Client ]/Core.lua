@@ -48,6 +48,36 @@ CreateThread(function()
   end
 end)
 --------------------------------------------------------------------------------
+-- Update DokusCore Hud
+--------------------------------------------------------------------------------
+-- function getLowest(Table)
+--   local low = math.huge
+--   local index
+--   for i, v in pairs(Table) do
+--     if v.Dist < low then
+--       low = v.Dist
+--       index = { Dist=low, Loc=v.ID}
+--     end
+--   end
+--   return index
+-- end
+--
+-- CreateThread(function()
+--   while true do Wait(0)
+--     local Number, Array = 0, {}
+--     local Ped = PlayerPedId()
+--     local pCoords = GetEntityCoords(ped)
+--
+--     for k, v in pairs(_Zones) do
+--       local Dist = GetDistance(v.Coords)
+--       table.insert(Array, { Loc = v.ID, Dist = Dist })
+--     end
+--
+--     print(getLowest(Array).Dist, getLowest(Array).Loc)
+--     Wait(30000)
+--   end
+-- end)
+--------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 RegisterNetEvent('DokusCore:Banking:C:StartBank')
 AddEventHandler('DokusCore:Banking:C:StartBank', function(Ped)

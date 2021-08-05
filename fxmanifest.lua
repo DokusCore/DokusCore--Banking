@@ -6,7 +6,6 @@ author 'DevDokus'
 fx_version "adamant"
 games {"rdr3"}
 version '0.1.0 BETA'
-dependencies { 'DokusCore' }
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 client_scripts { '[ Core ]/[ Client ]/*.lua' }
