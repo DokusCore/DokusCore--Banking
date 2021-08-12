@@ -91,7 +91,7 @@ AddEventHandler('DokusCore:Banking:C:StartBank', function(Ped)
         IsBankInUse = true
         local cData = TSC('DokusCore:S:Core:GetCoreUserData')
         Steam, CharID = cData.Steam, cData.CharID
-        local bData = TSC('DokusCore:S:Core:DB:GetViaSteamAndCharID', { DB.Banks.Get, cData.Steam, cData.CharID })
+        local bData = TSC('DokusCore:S:Core:DB:GetViaSteamAndCharID', { DB.Banks.Get, cData.Steam, cData.CharID })[1]
         Money, Gold, BankMoney, BankGold = bData.Money, bData.Gold, bData.BankMoney, bData.BankGold
         local array = { action = "showAccount", bank = BankMoney, money = Money, gold = Gold }
         local encoded = json.encode(array)
