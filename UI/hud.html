@@ -19,7 +19,7 @@
     <p id="bankName">SAINT DENIS BANK</p>
     <p id="bankDesc">Keeping your money safe since 1791</p>
     <div class="balance">
-      YOUR MONEY<br>
+      Money - Gold<br>
       <span class="money"><span id="dollars">100.10$</span> - <span id="gold">100.10<span id="iconGold">d</span></span>
       </span>
     </div>
@@ -206,47 +206,20 @@
       $('#sendDeposit').click(function() {
         var dollars = $('input[type=number][name=dmoneyinput]').val();
         var golds = $('input[type=number][name=dgoldinput]').val();
-
-        if (!dollars && !golds) {
-          console.log("Vacia");
-          return;
-        }
-
-        if (!dollars) {
-          dollars = 0.00;
-        }
-        if (!golds) {
-          golds = 0.00;
-        }
-
-        $.post("http://DokusCore--Banking/Deposit", JSON.stringify({
-          money: dollars,
-          gold: golds
-        }));
+        if (!dollars && !golds) { return; }
+        if (!dollars)           { dollars = 0.00; }
+        if (!golds)             { golds = 0.00; }
+        $.post("http://DokusCore--Banking/Deposit", JSON.stringify({ money: dollars, gold: golds }));
       });
 
       //Withdraw Function
       $('#sendWithdraw').click(function() {
         var dollars = $('input[type=number][name=wmoneyinput]').val();
         var golds = $('input[type=number][name=wgoldinput]').val();
-
-        if (!dollars && !golds) {
-          console.log("Vacia");
-          return;
-        }
-
-        if (!dollars) {
-          dollars = 0.00;
-        }
-        if (!golds) {
-          golds = 0.00;
-        }
-
-        $.post("http://DokusCore--Banking/Withdraw", JSON.stringify({
-          money: dollars,
-          gold: golds,
-          type: "withdraw"
-        }));
+        if (!dollars && !golds) { return; }
+        if (!dollars) { dollars = 0.00; }
+        if (!golds) { golds = 0.00; }
+        $.post("http://DokusCore--Banking/Withdraw", JSON.stringify({ money: dollars, gold: golds, type: "withdraw" }));
       });
 
       //SendTransfer Function
@@ -256,22 +229,9 @@
         var golds = $('input[type=number][name=tgoldinput]').val();
         var reason = $('input[type=text][name=reason]').val();
         var values = JSON.parse($("#users").children("option:selected").val());
-
         var isInstant = document.getElementById("instantBox").checked;
-
-        console.log(dollars)
-        console.log(golds)
-        console.log(reason)
-        console.log(isInstant)
-        console.log(values.steam)
-        console.log(values.charid)
-
-        if (!dollars) {
-          dollars = "0";
-        }
-        if (!golds) {
-          golds = "0";
-        }
+        if (!dollars) { dollars = "0"; }
+        if (!golds) { golds = "0"; }
         $.post("http://DokusCore--Banking/Transfer", JSON.stringify({
           steam: values.steam,
           charid: values.charid,
@@ -280,22 +240,13 @@
           gold: golds,
           instant: isInstant
         }));
-
       });
 
       //SearchUsers Function
       $('#searchUsers').click(function() {
         var names = $('input[type=text][name=suser]').val();
-
-        if (!names && names.length < 3) {
-          console.log("Vacia");
-          return;
-        }
-
-        $.post("http://DokusCore--Banking/SearchUsers", JSON.stringify({
-          name: names,
-        }));
-
+        if (!names && names.length < 3) { return; }
+        $.post("http://DokusCore--Banking/SearchUsers", JSON.stringify({ name: names, }));
       });
 
       //Close Function
