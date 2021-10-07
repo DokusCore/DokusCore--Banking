@@ -5,6 +5,7 @@
 local Loc, InRange = nil, false
 local Steam, CharID = nil, nil
 local BankInUse = false
+local PluginReady = false
 PromptBank, AliveNPCs = nil, {}
 OpenBankGroup = GetRandomIntInRange(0, 0xffffff)
 --------------------------------------------------------------------------------
@@ -49,7 +50,7 @@ CreateThread(function()
 
           -- When not in range and entering the area
           if ((Dist <= 3) and not (InRange)) then
-            Loc, InRange = nil, true
+            InRange = true
             TriggerEvent('DokusCore:Banking:StartBank')
           end
         end
@@ -77,7 +78,7 @@ AddEventHandler('DokusCore:Banking:StartBank', function()
       if (Bank.Exist) then
         local Data = Bank.Result[1]
         local Money, Gold, BankMoney, BankGold = Data.Money, Data.Gold, Data.BankMoney, Data.BankGold
-        local array = { action = "showAccount", bank = BankMoney, money = Money, gold = Gold }
+        local array = { action = "showAccount", bank = string.upper(Loc), money = Money, gold = Gold }
         local encoded = json.encode(array)
         SetNuiFocus(true, true)
         SendNuiMessage(encoded)
@@ -92,95 +93,107 @@ end)
 -- When the user makes his or her's deposit
 --------------------------------------------------------------------------------
 RegisterNUICallback('Deposit', function(Data)
-  local DepMoney, DepGold = tonumber(Data.money), tonumber(Data.gold)
-  local IsMoney, IsGold = (DepMoney > 0), (DepGold > 0)
-  local Bank = TSC('DokusCore:Core:DBGet:Banks', { 'user', { Steam, CharID } })
-  local Data = Bank.Result[1]
-  local Money, Gold, BankMoney, BankGold = Data.Money, Data.Gold, Data.BankMoney, Data.BankGold
-
-  -- -- Do money transaction
-  if (IsMoney) then
-    if (Money >= DepMoney) then
-      TriggerEvent('DokusCore:Core:Notify', "You've transacted $"..DepMoney.." to your bank account", 'TopRight', 10000)
-      TSC('DokusCore:Core:DBSet:Bank', { 'BankMoney', '+', { Steam, CharID, DepMoney } })
-      TSC('DokusCore:Core:DBSet:Bank', { 'Money', '-', { Steam, CharID, DepMoney } })
-    else
-      TriggerEvent('DokusCore:Core:Notify', 'Not enough money in your wallet. $'..Money..' left', 'TopRight', 10000)
-    end
-  end
-
-  -- Do gold transaction
-  if (IsGold) then
-    if (Gold >= DepGold) then
-      TriggerEvent('DokusCore:Core:Notify', "You've transacted $"..DepGold.." to your bank account", 'TopRight', 10000)
-      TSC('DokusCore:Core:DBSet:Bank', { 'BankGold', '+', { Steam, CharID, DepGold } })
-      TSC('DokusCore:Core:DBSet:Bank', { 'Gold', '-', { Steam, CharID, DepGold } })
-    else
-      TriggerEvent('DokusCore:Core:Notify', 'Not enough gold in your wallet. '..BankGold..' Gold left', 'TopRight', 10000)
-    end
-  end
-
-  -- Update the bank hud
-  if (Bank.Exist) then
+  if not (TransIsMade) then
+    TransIsMade = true
+    local DepMoney, DepGold = tonumber(Data.money), tonumber(Data.gold)
+    local IsMoney, IsGold = (DepMoney > 0), (DepGold > 0)
     local Bank = TSC('DokusCore:Core:DBGet:Banks', { 'user', { Steam, CharID } })
     local Data = Bank.Result[1]
     local Money, Gold, BankMoney, BankGold = Data.Money, Data.Gold, Data.BankMoney, Data.BankGold
-    local array = { action = "showAccount", bank = BankMoney, money = Money, gold = Gold }
-    local encoded = json.encode(array)
-    SetNuiFocus(true, true)
-    SendNuiMessage(encoded)
-    Wait(2000)
-  end
 
-  -- Update the Hud
-  TSC('DokusCore:Core:Hud:Update')
+    -- -- Do money transaction
+    if (IsMoney) then
+      if (Money >= DepMoney) then
+        TriggerEvent('DokusCore:Core:Notify', "You've transacted $"..DepMoney.." to your bank account", 'TopRight', 10000)
+        TSC('DokusCore:Core:DBSet:Bank', { 'BankMoney', '+', { Steam, CharID, DepMoney } })
+        TSC('DokusCore:Core:DBSet:Bank', { 'Money', '-', { Steam, CharID, DepMoney } })
+      else
+        TriggerEvent('DokusCore:Core:Notify', 'Not enough money in your wallet. $'..Money..' left', 'TopRight', 10000)
+      end
+    end
+
+    -- Do gold transaction
+    if (IsGold) then
+      if (Gold >= DepGold) then
+        TriggerEvent('DokusCore:Core:Notify', "You've transacted $"..DepGold.." to your bank account", 'TopRight', 10000)
+        TSC('DokusCore:Core:DBSet:Bank', { 'BankGold', '+', { Steam, CharID, DepGold } })
+        TSC('DokusCore:Core:DBSet:Bank', { 'Gold', '-', { Steam, CharID, DepGold } })
+      else
+        TriggerEvent('DokusCore:Core:Notify', 'Not enough gold in your wallet. '..BankGold..' Gold left', 'TopRight', 10000)
+      end
+    end
+
+    -- Update the bank hud
+    if (Bank.Exist) then
+      local Bank = TSC('DokusCore:Core:DBGet:Banks', { 'user', { Steam, CharID } })
+      local Data = Bank.Result[1]
+      local Money, Gold, BankMoney, BankGold = Data.Money, Data.Gold, Data.BankMoney, Data.BankGold
+      local array = { action = "showAccount", bank = string.upper(Loc), money = Money, gold = Gold }
+      local encoded = json.encode(array)
+      SetNuiFocus(true, true)
+      SendNuiMessage(encoded)
+      Wait(2000)
+    end
+
+    -- Update the Hud
+    TSC('DokusCore:Core:Hud:Update')
+    TransIsMade = false
+  else
+    TriggerEvent('DokusCore:Core:Notify', "You're trying to deposit to fast, give it a moment!", 'TopRight', 10000)
+  end
 end)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- When the user makes his or her's withdraw
 --------------------------------------------------------------------------------
 RegisterNUICallback('Withdraw', function(Data)
-  local DepMoney, DepGold = tonumber(Data.money), tonumber(Data.gold)
-  local IsMoney, IsGold = (DepMoney > 0), (DepGold > 0)
-  local Bank = TSC('DokusCore:Core:DBGet:Banks', { 'user', { Steam, CharID } })
-  local Data = Bank.Result[1]
-  local Money, Gold, BankMoney, BankGold = Data.Money, Data.Gold, Data.BankMoney, Data.BankGold
-  -- -- Do money transaction
-  if (IsMoney) then
-    if (BankMoney >= DepMoney) then
-      TSC('DokusCore:Core:DBSet:Bank', { 'BankMoney', '-', { Steam, CharID, DepMoney } })
-      TSC('DokusCore:Core:DBSet:Bank', { 'Money', '+', { Steam, CharID, DepMoney } })
-      TriggerEvent('DokusCore:Core:Notify', "You've transacted $"..DepMoney.." to your wallet", 'TopRight', 10000)
-    else
-      TriggerEvent('DokusCore:Core:Notify', 'Not enough money in the bank. $'..BankMoney..' left', 'TopRight', 10000)
-    end
-  end
-
-  -- Do gold transaction
-  if (IsGold) then
-    if (BankGold >= DepGold) then
-      TSC('DokusCore:Core:DBSet:Bank', { 'BankGold', '-', { Steam, CharID, DepGold } })
-      TSC('DokusCore:Core:DBSet:Bank', { 'Gold', '+', { Steam, CharID, DepGold } })
-      TriggerEvent('DokusCore:Core:Notify', "You've transacted "..DepGold.." Gold to your wallet", 'TopRight', 10000)
-    else
-      TriggerEvent('DokusCore:Core:Notify', 'Not enough gold in the bank. '..BankGold..' Gold left', 'TopRight', 10000)
-    end
-  end
-
-  -- Update the bank hud
-  if (Bank.Exist) then
+  if not (TransIsMade) then
+    TransIsMade = true
+    local DepMoney, DepGold = tonumber(Data.money), tonumber(Data.gold)
+    local IsMoney, IsGold = (DepMoney > 0), (DepGold > 0)
     local Bank = TSC('DokusCore:Core:DBGet:Banks', { 'user', { Steam, CharID } })
     local Data = Bank.Result[1]
     local Money, Gold, BankMoney, BankGold = Data.Money, Data.Gold, Data.BankMoney, Data.BankGold
-    local array = { action = "showAccount", bank = BankMoney, money = Money, gold = Gold }
-    local encoded = json.encode(array)
-    SetNuiFocus(true, true)
-    SendNuiMessage(encoded)
-    Wait(2000)
-  end
+    -- -- Do money transaction
+    if (IsMoney) then
+      if (BankMoney >= DepMoney) then
+        TSC('DokusCore:Core:DBSet:Bank', { 'BankMoney', '-', { Steam, CharID, DepMoney } })
+        TSC('DokusCore:Core:DBSet:Bank', { 'Money', '+', { Steam, CharID, DepMoney } })
+        TriggerEvent('DokusCore:Core:Notify', "You've transacted $"..DepMoney.." to your wallet", 'TopRight', 10000)
+      else
+        TriggerEvent('DokusCore:Core:Notify', 'Not enough money in the bank. $'..BankMoney..' left', 'TopRight', 10000)
+      end
+    end
 
-  -- Update the Hud
-  TSC('DokusCore:Core:Hud:Update')
+    -- Do gold transaction
+    if (IsGold) then
+      if (BankGold >= DepGold) then
+        TSC('DokusCore:Core:DBSet:Bank', { 'BankGold', '-', { Steam, CharID, DepGold } })
+        TSC('DokusCore:Core:DBSet:Bank', { 'Gold', '+', { Steam, CharID, DepGold } })
+        TriggerEvent('DokusCore:Core:Notify', "You've transacted "..DepGold.." Gold to your wallet", 'TopRight', 10000)
+      else
+        TriggerEvent('DokusCore:Core:Notify', 'Not enough gold in the bank. '..BankGold..' Gold left', 'TopRight', 10000)
+      end
+    end
+
+    -- Update the bank hud
+    if (Bank.Exist) then
+      local Bank = TSC('DokusCore:Core:DBGet:Banks', { 'user', { Steam, CharID } })
+      local Data = Bank.Result[1]
+      local Money, Gold, BankMoney, BankGold = Data.Money, Data.Gold, Data.BankMoney, Data.BankGold
+      local array = { action = "showAccount", bank = BankMoney, money = Money, gold = Gold }
+      local encoded = json.encode(array)
+      SetNuiFocus(true, true)
+      SendNuiMessage(encoded)
+      Wait(2000)
+    end
+
+    -- Update the Hud
+    TSC('DokusCore:Core:Hud:Update')
+    TransIsMade = false
+  else
+    TriggerEvent('DokusCore:Core:Notify', "You're trying to withdraw to fast, give it a moment!", 'TopRight', 10000)
+  end
 end)
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

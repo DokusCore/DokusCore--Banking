@@ -5,10 +5,12 @@ description 'DokusCore Banking System - http://DokusCore.com'
 author 'DevDokus'
 fx_version "adamant"
 games {"rdr3"}
-version '2.0.0'
+version '2.0.1'
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 client_scripts { '[ Core ]/[ Client ]/*.lua' }
+server_scripts { '[ Core ]/[ Server ]/*.lua' }
+--------------------------------------------------------------------------------
 shared_script {
   '@DokusCore/[ Core ]/[ System ]/CBSystem.lua',
   '@DokusCore/[ Configs ]/[ Core ]/Core.lua',
@@ -30,6 +32,7 @@ shared_script {
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 ui_page "UI/hud.html"
+--------------------------------------------------------------------------------
 files {
   'UI/hud.html',
   'UI/data/css/style.css',
@@ -46,8 +49,7 @@ files {
   'UI/data/js/progressbar.js',
   'UI/data/js/progressbar.min.js',
   'UI/data/js/progressbar.min.js.map',
-  'UI/data/background.png',
-  'UI/hud.html',
+  'UI/data/background.png'
 }
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

@@ -16,7 +16,7 @@
 
 
   <div class="cont-content" id="generalPage">
-    <p id="bankName">SAINT DENIS BANK</p>
+    <p id="bankName"></p>
     <p id="bankDesc">Keeping your money safe since 1791</p>
     <div class="balance">
       Money - Gold<br>
@@ -40,7 +40,7 @@
   </div>
 
   <div class="cont-content" id="depositPage">
-    <p id="bankName">SAINT DENIS BANK</p>
+    <p id="bankName">DEPOSITING</p>
     <p id="bankDesc">Keeping your money safe since 1791</p>
     <div class="deposit-info">
       Deposit your dollars or gold<br> $
@@ -64,7 +64,7 @@
   </div>
 
   <div class="cont-content" id="withdrawPage">
-    <p id="bankName">SAINT DENIS BANK</p>
+    <p id="bankName">WITHDRAWING</p>
     <p id="bankDesc">Keeping your money safe since 1791</p>
     <div class="deposit-info">
       Withdraw your dollars or gold<br> $
@@ -88,7 +88,7 @@
   </div>
 
   <div class="cont-content" id="transfersPage">
-    <p id="bankName">SAINT DENIS BANK</p>
+    <p id="bankName"></p>
     <p id="bankDesc">Keeping your money safe since 1791</p>
     <div class="transfers-info">
       Transfers<br>
@@ -121,7 +121,7 @@
   </div>
 
   <div class="cont-content" id="newTransferPage">
-    <p id="bankName">SAINT DENIS BANK</p>
+    <p id="bankName"></p>
     <p id="bankDesc">Keeping your money safe since 1791</p>
     <div class="transfer-info">
       <input placeholder="Name of User" name="suser" minlength="3" type="text"><button class="btn" id="searchUsers">Search</button><br>
@@ -264,7 +264,6 @@
         if (data !== undefined) {
           if (data.action === "showAccount") { //action updateData
             //Bank Name
-            console.log('Hallo');
             document.getElementById("bankName").innerText = data.bank;
             document.getElementById("dollars").innerText = data.money;
             document.getElementById("gold").innerText = data.gold;
