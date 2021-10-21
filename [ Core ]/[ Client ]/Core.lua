@@ -8,6 +8,7 @@ local BankInUse = false
 local PluginReady = false
 PromptBank, AliveNPCs = nil, {}
 OpenBankGroup = GetRandomIntInRange(0, 0xffffff)
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Create the map markers and spawn the bank npcs
@@ -105,8 +106,7 @@ RegisterNUICallback('Deposit', function(Data)
     if (IsMoney) then
       if (Money >= DepMoney) then
         TriggerEvent('DokusCore:Core:Notify', "You've transacted $"..DepMoney.." to your bank account", 'TopRight', 10000)
-        TSC('DokusCore:Core:DBSet:Bank', { 'BankMoney', '+', { Steam, CharID, DepMoney } })
-        TSC('DokusCore:Core:DBSet:Bank', { 'Money', '-', { Steam, CharID, DepMoney } })
+        TSC('DokusCore:Core:DBSet:Bank', { 'Deposit', 'Money', { Steam, CharID, DepMoney } })
       else
         TriggerEvent('DokusCore:Core:Notify', 'Not enough money in your wallet. $'..Money..' left', 'TopRight', 10000)
       end
@@ -116,8 +116,7 @@ RegisterNUICallback('Deposit', function(Data)
     if (IsGold) then
       if (Gold >= DepGold) then
         TriggerEvent('DokusCore:Core:Notify', "You've transacted $"..DepGold.." to your bank account", 'TopRight', 10000)
-        TSC('DokusCore:Core:DBSet:Bank', { 'BankGold', '+', { Steam, CharID, DepGold } })
-        TSC('DokusCore:Core:DBSet:Bank', { 'Gold', '-', { Steam, CharID, DepGold } })
+        TSC('DokusCore:Core:DBSet:Bank', { 'Deposit', 'Gold', { Steam, CharID, DepGold } })
       else
         TriggerEvent('DokusCore:Core:Notify', 'Not enough gold in your wallet. '..BankGold..' Gold left', 'TopRight', 10000)
       end
@@ -157,8 +156,7 @@ RegisterNUICallback('Withdraw', function(Data)
     -- -- Do money transaction
     if (IsMoney) then
       if (BankMoney >= DepMoney) then
-        TSC('DokusCore:Core:DBSet:Bank', { 'BankMoney', '-', { Steam, CharID, DepMoney } })
-        TSC('DokusCore:Core:DBSet:Bank', { 'Money', '+', { Steam, CharID, DepMoney } })
+        TSC('DokusCore:Core:DBSet:Bank', { 'Withdraw', 'Money', { Steam, CharID, DepMoney } })
         TriggerEvent('DokusCore:Core:Notify', "You've transacted $"..DepMoney.." to your wallet", 'TopRight', 10000)
       else
         TriggerEvent('DokusCore:Core:Notify', 'Not enough money in the bank. $'..BankMoney..' left', 'TopRight', 10000)
@@ -168,8 +166,7 @@ RegisterNUICallback('Withdraw', function(Data)
     -- Do gold transaction
     if (IsGold) then
       if (BankGold >= DepGold) then
-        TSC('DokusCore:Core:DBSet:Bank', { 'BankGold', '-', { Steam, CharID, DepGold } })
-        TSC('DokusCore:Core:DBSet:Bank', { 'Gold', '+', { Steam, CharID, DepGold } })
+        TSC('DokusCore:Core:DBSet:Bank', { 'Withdraw', 'Gold', { Steam, CharID, DepGold } })
         TriggerEvent('DokusCore:Core:Notify', "You've transacted "..DepGold.." Gold to your wallet", 'TopRight', 10000)
       else
         TriggerEvent('DokusCore:Core:Notify', 'Not enough gold in the bank. '..BankGold..' Gold left', 'TopRight', 10000)
