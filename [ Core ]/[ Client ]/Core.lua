@@ -2,12 +2,12 @@
 ---------------------------------- DokusCore -----------------------------------
 --------------------------------------------------------------------------------
 -- Varables
-local Loc, InRange = nil, false
+local Loc, InArea, InRange = nil, false, false
 local Steam, CharID = nil, nil
-local BankInUse = false
 local PluginReady = false
 PromptBank, AliveNPCs = nil, {}
 OpenBankGroup = GetRandomIntInRange(0, 0xffffff)
+local Low = string.lower
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -43,22 +43,50 @@ CreateThread(function()
         if (Loc == v.ID) then
 
           -- When in range and leaving the area
-          if ((Dist > 3) and (InRange)) then
-            Loc, InRange = nil, false
+          if ((Dist > 3) and (InArea)) then
+            Loc, InArea = nil, false
             PromptBank = nil
             OpenBankGroup = GetRandomIntInRange(0, 0xffffff)
           end
 
           -- When not in range and entering the area
-          if ((Dist <= 3) and not (InRange)) then
-            InRange = true
-            TriggerEvent('DokusCore:Banking:StartBank')
+          if ((Dist <= 3) and not (InArea)) then
+            InArea = true
+            TriggerEvent('DokusCore:Banking:CheckByNPC')
           end
         end
       end
     end
   end
 end)
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Check players distance from the NPC
+--------------------------------------------------------------------------------
+RegisterNetEvent('DokusCore:Banking:CheckByNPC')
+AddEventHandler('DokusCore:Banking:CheckByNPC', function()
+  local CheckByNPC = true
+  while CheckByNPC do Wait(100)
+    for k,v in pairs(_Banking.NPCs) do
+      if ((Loc == nil) or (v.ID == nil)) then break end
+      if (Low(Loc) == Low(v.ID)) then
+        local Dist = GetDistance(v.Coords)
+
+        -- When the player gets in the range of the NPC
+        if ((Dist <= v.ActRadius) and not InRange) then
+          InRange = true
+          TriggerEvent('DokusCore:Banking:StartBank')
+        end
+
+        -- when the player leave the range of the NPC
+        if ((Dist > v.ActRadius) and InRange) then
+          InRange, CheckByNPC = false, false
+        end
+      end
+    end
+  end
+end)
+
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Start Banking code when user is in range
@@ -68,14 +96,16 @@ AddEventHandler('DokusCore:Banking:StartBank', function()
   local Core = TSC('DokusCore:Core:GetCoreUserData')
   Steam, CharID = Core.Steam, Core.CharID
   local Data = TSC('DokusCore:Core:DBGet:Settings', { 'user', { Steam } })
+  local BankInUse = TSC('DokusCore:Banking:NPCStatus', { 'Get' })
   OpenBank(Data.Result[1].Language)
   while InRange do Wait(0)
     local BankGroupName  = CreateVarString(10, 'LITERAL_STRING', _('Banking_Title', Data.Result[1].Language))
     PromptSetActiveGroupThisFrame(OpenBankGroup, BankGroupName)
     local Prompt = PromptHasHoldModeCompleted(PromptBank)
+
     if ((Prompt) and not (BankInUse)) then
-      BankInUse = true
       local Bank = TSC('DokusCore:Core:DBGet:Banks', { 'user', { Steam, CharID } })
+      TSC('DokusCore:Banking:NPCStatus', { 'Set', 'Busy' })
       if (Bank.Exist) then
         local Data = Bank.Result[1]
         local Money, Gold, BankMoney, BankGold = Data.Money, Data.Gold, Data.BankMoney, Data.BankGold
@@ -84,9 +114,18 @@ AddEventHandler('DokusCore:Banking:StartBank', function()
         SetNuiFocus(true, true)
         SendNuiMessage(encoded)
         Wait(2000)
-        BankInUse = false
       end
+    elseif (Prompt) and (BankInUse) then
+      Notify('The banker is currently busy with another citizen, one moment please!', 'TopRight', 5000)
+      Wait(2000)
     end
+  end
+
+  if not InRange then
+    PromptBank = nil
+    OpenBankGroup = GetRandomIntInRange(0, 0xffffff)
+    TriggerEvent('DokusCore:Banking:CheckByNPC')
+    TSC('DokusCore:Banking:NPCStatus', { 'Set', 'Idle' })
   end
 end)
 --------------------------------------------------------------------------------

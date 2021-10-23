@@ -41,8 +41,14 @@ function SpawnStoreNPC(_, Coords, Heading)
 end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-
-
+function Notify(txt, pos, time)
+  TriggerEvent("pNotify:SendNotification", {
+    text = "<height='40' width='40' style='float:left; margin-bottom:10px; margin-left:20px;' />"..txt,
+    type = "success", timeout = time, layout = pos, queue = "right"
+  })
+end
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 
 
