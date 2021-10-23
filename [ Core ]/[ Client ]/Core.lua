@@ -71,7 +71,6 @@ AddEventHandler('DokusCore:Banking:CheckByNPC', function()
       if ((Loc == nil) or (v.ID == nil)) then break end
       if (Low(Loc) == Low(v.ID)) then
         local Dist = GetDistance(v.Coords)
-
         -- When the player gets in the range of the NPC
         if ((Dist <= v.ActRadius) and not InRange) then
           InRange = true
