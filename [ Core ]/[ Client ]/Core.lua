@@ -138,13 +138,13 @@ RegisterNUICallback('Deposit', function(Data)
     local IsMoney, IsGold = (DepMoney > 0), (DepGold > 0)
 
     if (IsMoney) then
-      local Data = TSC('DokusCore:Core:DBSet:Bank', { 'Deposit', 'Money', { Steam, CharID, DepMoney } })
+      local Data = TSC('DokusCore:Core:DBSet:Bank', { 'normal', { 'Deposit', 'Money', { Steam, CharID, DepMoney } } })
       if (Data) then TriggerEvent('DokusCore:Core:Notify', "You've transacted $"..DepMoney.." to your bank account", 'TopRight', 10000) end
       if not (Data) then TriggerEvent('DokusCore:Core:Notify', 'Not enough money in your wallet to make this transaction', 'TopRight', 10000) end
     end
 
     if (IsGold) then
-      local Data = TSC('DokusCore:Core:DBSet:Bank', { 'Deposit', 'Gold', { Steam, CharID, DepGold } })
+      local Data = TSC('DokusCore:Core:DBSet:Bank', { 'normal', { 'Deposit', 'Gold', { Steam, CharID, DepGold } } })
       if (Data) then TriggerEvent('DokusCore:Core:Notify', "You've transacted "..DepGold.." gold to your bank account", 'TopRight', 10000) end
       if not (Data) then TriggerEvent('DokusCore:Core:Notify', 'Not enough gold in your wallet to make this transaction', 'TopRight', 10000) end
     end
@@ -161,7 +161,7 @@ RegisterNUICallback('Deposit', function(Data)
     Wait(500)
 
     -- Update the hud and unlock next transaction
-    TSC('DokusCore:Core:Hud:Update')
+    TSC('DokusCore:Core:Hud:Update', { 'user' })
     TransIsMade = false
   else
     TriggerEvent('DokusCore:Core:Notify', "You're trying to deposit to fast, give it a moment!", 'TopRight', 10000)
@@ -178,13 +178,13 @@ RegisterNUICallback('Withdraw', function(Data)
     local IsMoney, IsGold = (DepMoney > 0), (DepGold > 0)
 
     if (IsMoney) then
-      local Data = TSC('DokusCore:Core:DBSet:Bank', { 'Withdraw', 'Money', { Steam, CharID, DepMoney } })
+      local Data = TSC('DokusCore:Core:DBSet:Bank', { 'normal', { 'Withdraw', 'Money', { Steam, CharID, DepMoney } } })
       if (Data) then TriggerEvent('DokusCore:Core:Notify', "You've transacted $"..DepMoney.." to your bank account", 'TopRight', 10000) end
       if not (Data) then TriggerEvent('DokusCore:Core:Notify', 'Not enough money in your bank account to make this transaction', 'TopRight', 10000) end
     end
 
     if (IsGold) then
-      local Data = TSC('DokusCore:Core:DBSet:Bank', { 'Withdraw', 'Gold', { Steam, CharID, DepGold } })
+      local Data = TSC('DokusCore:Core:DBSet:Bank', { 'normal', { 'Withdraw', 'Gold', { Steam, CharID, DepGold } } })
       if (Data) then TriggerEvent('DokusCore:Core:Notify', "You've transacted "..DepGold.." gold to your wallet", 'TopRight', 10000) end
       if not (Data) then TriggerEvent('DokusCore:Core:Notify', 'Not enough gold in your bank account to make this transaction', 'TopRight', 10000) end
     end
@@ -201,7 +201,7 @@ RegisterNUICallback('Withdraw', function(Data)
     Wait(500)
 
     -- Update the hud and unlock next transaction
-    TSC('DokusCore:Core:Hud:Update')
+    TSC('DokusCore:Core:Hud:Update', { 'user' })
     TransIsMade = false
   else
     TriggerEvent('DokusCore:Core:Notify', "You're trying to withdraw to fast, give it a moment!", 'TopRight', 10000)
