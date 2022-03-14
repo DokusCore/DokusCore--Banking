@@ -5,7 +5,7 @@ description 'DokusCore Banking System - http://DokusCore.com'
 author 'DevDokus'
 fx_version "adamant"
 games {"rdr3"}
-version '2.4.0'
+version '2.4.1'
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 client_scripts {
